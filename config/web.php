@@ -46,19 +46,22 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
+        
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
+            'enableStrictParsing' => false,
             'rules' => [
             ],
         ],
-        */
+        
     ],
     
     'modules' => [
         'user' => [
             'class' => 'dektrium\user\Module',
+            'enableConfirmation'=>false,
+            'admins'=>['admin']
         ],
     ],
     
