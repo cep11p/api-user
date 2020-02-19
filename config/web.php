@@ -19,6 +19,21 @@ $config = [
                 'application/json' => 'yii\web\JsonParser',
             ]
         ],
+        
+        'i18n' => [
+            'translations' => [
+                '*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'basePath' => '@app/messages', // if advanced application, set @frontend/messages
+                    'sourceLanguage' => 'es_ES',
+                    'fileMap' => [
+                        //'main' => 'main.php',
+                    ],
+                ],
+            ],
+            
+        ],
+        
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
@@ -52,6 +67,15 @@ $config = [
             'showScriptName' => false,
             'enableStrictParsing' => false,
             'rules' => [
+                [   'class' => 'yii\rest\UrlRule',
+                    'controller' => 'api/usuario',   
+                    'extraPatterns' => [
+                        'POST login' => 'login',
+                        'OPTIONS login' => 'options'
+                        //'GET mostrar/{id}' => 'mostrar',
+                    ],                       
+                     
+                ],
             ],
         ],
         
@@ -62,6 +86,9 @@ $config = [
             'class' => 'dektrium\user\Module',
             'enableConfirmation'=>false,
             'admins'=>['admin']
+        ],
+        'api' => [
+            'class' => 'app\modules\api\Api',
         ],
     ],
     
