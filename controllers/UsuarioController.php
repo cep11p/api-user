@@ -32,23 +32,55 @@ class UsuarioController extends ActiveController
     
     public function behaviors()
     {
-        return [
-            [
-                'class' => 'yii\filters\ContentNegotiator',
-                'formats' => [
-                    'application/json' => Response::FORMAT_JSON,
-                ],
-                'languages' => [
-                    'es',
-                ],      
-            ],
-            'corsFilter' => [
-                'class' => \yii\filters\Cors::className()
 
+        $behaviors = parent::behaviors();     
+
+        $auth = $behaviors['authenticator'];
+        unset($behaviors['authenticator']);
+
+        $behaviors['corsFilter'] = [
+            'class' => \yii\filters\Cors::className()
+        ];
+
+        $behaviors['contentNegotiator']['formats']['application/json'] = Response::FORMAT_JSON;
+
+        $behaviors['authenticator'] = $auth;
+
+        $behaviors['authenticator'] = [
+            'class' => \yii\filters\auth\HttpBearerAuth::className(),
+        ];
+
+        // avoid authentication on CORS-pre-flight requests (HTTP OPTIONS method)
+        $behaviors['authenticator']['except'] = [
+            'options',
+            'login',
+//            'signup',
+//            'confirm',
+//            'password-reset-request',
+//            'password-reset-token-verification',
+//            'password-reset'
+        ];     
+
+        $behaviors['access'] = [
+            'class' => \yii\filters\AccessControl::className(),
+            'only' => ['*'],
+            'rules' => [
+                [
+                    'allow' => true,
+                    'actions' => ['login'],
+                    'roles' => ['?'],
+                ],
+                [
+                    'allow' => true,
+                    'actions' => ['index'],
+                    'roles' => ['@'],
+                ],
             ]
         ];
-        
-        
+
+
+
+        return $behaviors;
     }
     
         /**
@@ -58,7 +90,6 @@ class UsuarioController extends ActiveController
      */
     public function actionLogin()
     {
-//        die('hola sin module');
         $parametros = Yii::$app->getRequest()->getBodyParams();
 
         $usuario = $this->finder->findUserByUsernameOrEmail($parametros['username']);       
@@ -66,8 +97,6 @@ class UsuarioController extends ActiveController
         if(!($usuario !== null && Password::validate($parametros['password_hash'],$usuario->password_hash))){
             throw new \yii\web\HttpException(500, 'usuario o contraseña inválido');
         }
-                
-        
         
         $payload = [
             'exp'=>time()+3600,
@@ -76,21 +105,11 @@ class UsuarioController extends ActiveController
         ];
         
         $token = \Firebase\JWT\JWT::encode($payload, \Yii::$app->params['JWT_SECRET']);   
-        
-//        if (\Yii::$app->authManager->checkAccess($usuario->id, 'crear_y_modificar_agente') ||
-//            \Yii::$app->authManager->checkAccess($usuario->id, 'inhabilitar_funcion') ||
-//            \Yii::$app->authManager->checkAccess($usuario->id, 'consulta')){
             
-            return [
+        return [
             'access_token' => $token,
             'username' => $usuario->username
-            ];
-//        }else{
-//            throw new \yii\web\HttpException(403, 'No tiene los permisos para ingresar a la aplicación');
-//        }
-        
-            
-        
+        ];
         
     }
 
