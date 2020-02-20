@@ -37,10 +37,12 @@ $config = [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
-//        'user' => [
-//            'identityClass' => 'app\models\User',
+        'user' => [
+            'identityClass' => 'app\models\ApiUser',
+            'enableSession' => false,
+            'enableSession' => false,
 //            'enableAutoLogin' => true,
-//        ],
+        ],
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
@@ -68,7 +70,7 @@ $config = [
             'enableStrictParsing' => false,
             'rules' => [
                 [   'class' => 'yii\rest\UrlRule',
-                    'controller' => 'api/usuario',   
+                    'controller' => 'usuario',   
                     'extraPatterns' => [
                         'POST login' => 'login',
                         'OPTIONS login' => 'options'
@@ -86,10 +88,7 @@ $config = [
             'class' => 'dektrium\user\Module',
             'enableConfirmation'=>false,
             'admins'=>['admin']
-        ],
-        'api' => [
-            'class' => 'app\modules\api\Api',
-        ],
+        ]
     ],
     
     'params' => $params,
