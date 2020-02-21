@@ -13,5 +13,13 @@ use dektrium\user\models\User;
 class ApiUser extends User {
 
     use \msheng\JWT\UserTrait;
-
+    
+    public function rules() {
+        return \yii\helpers\ArrayHelper::merge(
+            parent::rules(),
+            [
+//               ['password_hash', 'required']
+            ]
+        );
+    }
 }

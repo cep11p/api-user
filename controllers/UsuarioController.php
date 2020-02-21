@@ -8,6 +8,7 @@ use yii\web\Response;
 use dektrium\user\Finder;
 use dektrium\user\helpers\Password;
 use dektrium\user\Module;
+use yii\base\Exception;
 
 
 class UsuarioController extends ActiveController
@@ -72,7 +73,7 @@ class UsuarioController extends ActiveController
                 ],
                 [
                     'allow' => true,
-                    'actions' => ['index'],
+                    'actions' => ['index','create'],
                     'roles' => ['@'],
                 ],
             ]
@@ -81,6 +82,15 @@ class UsuarioController extends ActiveController
 
 
         return $behaviors;
+    }
+    
+    public function actions()
+    {
+        $actions = parent::actions();
+        unset($actions['create']);
+        unset($actions['update']);
+        unset($actions['view']);
+        return $actions;
     }
     
         /**
@@ -111,6 +121,33 @@ class UsuarioController extends ActiveController
             'username' => $usuario->username
         ];
         
+    }
+    
+    public function actionCreate() {
+        $param = Yii::$app->request->post(); 
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            
+            $model = new \app\models\ApiUser();
+            $model->setScenario('register');
+            $model->setAttributes($param);
+            
+            
+            if(!$model->register()){
+                throw new Exception(json_encode($model->getErrors()));
+            }
+            
+            $transaction->commit();
+            $resultado['success'] =  true;
+            $resultado['data']['id'] =  $model->id;
+
+            return $resultado;
+           
+        }catch (Exception $exc) {
+            $transaction->rollBack();
+            $mensaje =$exc->getMessage();
+            throw new \yii\web\HttpException(400, $mensaje);
+        }
     }
 
     
