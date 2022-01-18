@@ -1,0 +1,8 @@
+version: '2'
+
+services:
+  user: 
+   environment:
+       RUNMODE: prod
+       SERVICIO_REGISTRAL: app\components\ServicioRegistral
+       SERVICIO_LUGAR: app\components\ServicioLugar
