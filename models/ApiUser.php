@@ -18,7 +18,7 @@ class ApiUser extends User {
         return \yii\helpers\ArrayHelper::merge(
             parent::rules(),
             [
-//               ['password_hash', 'required']
+            //   ['password_hash', 'required']
             ]
         );
     }

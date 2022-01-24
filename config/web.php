@@ -37,12 +37,6 @@ $config = [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
-        'user' => [
-            'identityClass' => 'app\models\ApiUser',
-            'enableSession' => false,
-            'enableSession' => false,
-//            'enableAutoLogin' => true,
-        ],
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
@@ -69,15 +63,35 @@ $config = [
             'showScriptName' => false,
             'enableStrictParsing' => false,
             'rules' => [
-                [   'class' => 'yii\rest\UrlRule',
-                    'controller' => 'usuario',   
+                // [   
+                //     'class' => 'yii\rest\UrlRule',
+                //     'controller' => 'usuario',   
+                //     'extraPatterns' => [
+                //         'POST login' => 'login',
+                //         'OPTIONS login' => 'options'
+                //         //'GET mostrar/{id}' => 'mostrar',
+                //     ],                        
+                // ],
+                /****** USUARIOS *******/
+                [   #Usuario
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => 'api/usuario',   
                     'extraPatterns' => [
                         'POST login' => 'login',
-                        'OPTIONS login' => 'options'
-                        //'GET mostrar/{id}' => 'mostrar',
-                    ],                       
-                     
-                ],
+                        'OPTIONS login' => 'options',
+                        'OPTIONS listar-asignacion/{id}' => 'listar-asignacion',
+                        'GET listar-asignacion/{id}' => 'listar-asignacion',
+                        'OPTIONS crear-asignacion' => 'crear-asignacion',
+                        'POST crear-asignacion' => 'crear-asignacion',
+                        'OPTIONS borrar-asignacion' => 'borrar-asignacion',
+                        'POST borrar-asignacion' => 'borrar-asignacion',
+                        'OPTIONS baja/{id}' => 'baja',
+                        'PUT baja/{id}' => 'baja',
+                        'OPTIONS buscar-persona-por-cuil/{cuil}' => 'buscar-persona-por-cuil',
+                        'GET buscar-persona-por-cuil/{cuil}' => 'buscar-persona-por-cuil',
+                    ],
+                    'tokens' => ['{id}'=>'<id:\\w+>', '{cuil}'=>'<cuil:\\w+>'],                       
+                ]
             ],
         ],
         
@@ -88,7 +102,10 @@ $config = [
             'class' => 'dektrium\user\Module',
             'enableConfirmation'=>false,
             'admins'=>['admin']
-        ]
+        ],
+        'api' => [
+            'class' => 'app\modules\api\Api',
+        ],
     ],
     
     'params' => $params,
