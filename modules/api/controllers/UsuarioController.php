@@ -71,7 +71,7 @@ class UsuarioController extends ActiveController
                 [
                     'allow' => true,
                     'actions' => ['index','create','update','view','buscar-persona-por-cuil','baja', 'crear-asignacion', 'listar-asignacion','borrar-asignacion'],
-                    'roles' => ['soporte'],
+                    'roles' => ['@'],
                 ]
             ]
         ];
@@ -215,7 +215,6 @@ class UsuarioController extends ActiveController
         if($model==NULL){
             throw new \yii\web\HttpException(400, 'El usuario con el id '.$id.' no existe!');
         }
-        
         $resultado = ArrayHelper::merge($model->toArray(),$model->userPersona->persona);
         $resultado['localidad'] = $model->userPersona->localidad;
         

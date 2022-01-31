@@ -20,7 +20,9 @@
         "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
         "dektrium/yii2-user": "^0.9.14",
         "msheng/yii2-jwt": "^1.0",
-        "schmunk42/yii2-giiant": "@stable"
+        "schmunk42/yii2-giiant": "@stable",
+        "bedezign/yii2-audit": "^1.0",
+        "guzzlehttp/guzzle": "^7.4"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

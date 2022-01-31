@@ -16,7 +16,7 @@ class User extends ApiUser
     const ADMIN = 'admin';
     const SOPORTE = 'soporte';
     const USUARIO = 'usuario';
-
+    
     public function rules()
     {
         return ArrayHelper::merge(
@@ -475,9 +475,7 @@ class User extends ApiUser
             },
             "localidadid" => function () {
                 return $this->userPersona->localidadid;
-            },
-            "rol"
-
+            }
         ]);
         
         unset($fields['password_hash'],$fields['auth_key']);
