@@ -13,7 +13,7 @@ services:
       DB_PASS: root
     labels:
      - "traefik.backend=user"
-     - "traefik.frontend.rule=Host:api.user.local"
+     - "traefik.frontend.rule=Host:user.local"
      - "traefik.port=80"
 
   user_db:
