@@ -2,8 +2,8 @@
 
 namespace app\models;
 
+use app\components\ServicioInteroperable;
 use app\models\ApiUser;
-use Exception;
 use Yii;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
@@ -13,10 +13,6 @@ use yii\helpers\ArrayHelper;
  */
 class User extends ApiUser
 {    
-    const ADMIN = 'admin';
-    const SOPORTE = 'soporte';
-    const USUARIO = 'usuario';
-    
     public function rules()
     {
         return ArrayHelper::merge(
@@ -252,14 +248,9 @@ class User extends ApiUser
         $userPersona->setAttributes($params['usuario']);
         $userPersona->userid = $id;
 
-        $userPersona->addError('pepe','esto es un error1');
-        $userPersona->addError('pepe2','esto es un error2');
-
         if(!$userPersona->save()){
             throw new \yii\web\HttpException(400, json_encode(array($userPersona->errors)));
         }
-        
-        $user->setRol('usuario');
 
         return $id;
     }
@@ -289,11 +280,14 @@ class User extends ApiUser
             throw new \yii\web\HttpException(400, json_encode([$errors]));
         }
 
-        $resultado = \Yii::$app->registral->crearPersona($params);
-        if(isset($resultado->message)){
-            throw new \yii\web\HttpException(400, json_encode([$resultado->message]));
+        $servicioInteroperable = new ServicioInteroperable();
+        
+        $resultado = $servicioInteroperable->crearRegistro('registral','persona',$params);
+
+        if(!isset($resultado['data']['id'])){
+            throw new \yii\web\HttpException(400, 'El servicio registral no esta respondiendo correctamente');
         }
-        $personaid = intval($resultado);
+        $personaid = $resultado['data']['id'];
 
         return $personaid;
     }
@@ -320,35 +314,7 @@ class User extends ApiUser
             throw new \yii\web\HttpException(400, json_encode([$userPersona->errors]));
         }
 
-        if(isset($params['rol']) && (Yii::$app->user->can('admin'))){
-            $this->setRol($params['rol']);
-        }
-
         return $id;
-    }
-
-    public function setRol($rol)
-    {
-        #Chequeamos si el rol existe
-        if(AuthItem::findOne(['name'=>$rol,'type'=>AuthItem::ROLE])==NULL){
-            throw new \yii\web\HttpException(400, json_encode([['rol'=>'El rol '.$rol.' no existe']]));
-        }
-
-        ######### Asignamos el Rol ###########
-        //Si el usuario tiene rol borramos y dsp lo recreamos
-        AuthAssignment::deleteAll(['user_id'=>$this->id, 'item_name'=>User::USUARIO]);
-        AuthAssignment::deleteAll(['user_id'=>$this->id, 'item_name'=>User::SOPORTE]);
-        AuthAssignment::deleteAll(['user_id'=>$this->id, 'item_name'=>User::ADMIN]);
-        
-
-        $auth_assignment = new AuthAssignment();
-        $auth_assignment->setAttributes(['item_name'=>$rol,'user_id'=>strval($this->id)]);
-        if(!$auth_assignment->save()){
-            throw new \yii\web\HttpException(400, json_encode([$auth_assignment->errors]));
-        }
-
-        ######### Fin de asignacion de Rol ###########
-
     }
 
     public function setBaja($params)
@@ -424,23 +390,6 @@ class User extends ApiUser
     public function getUserPersona()
     {
         return $this->hasOne(UserPersona::className(), ['userid' => 'id']);
-    }
-
-    public function getRol(){
-        $query = new Query();
-        $query->select('name as rol')->from('auth_item');
-
-        $query->leftJoin('auth_assignment','auth_assignment.item_name = auth_item.name');
-        $query->leftJoin('user','user.id = auth_assignment.user_id');
-
-        $query->where(['auth_item.type'=>AuthItem::ROLE, 'user.id'=>$this->id]);
-
-        $command = $query->createCommand();
-        $rows = $command->queryAll();
-        
-        $resultado = (isset($rows[0]['rol']))?$rows[0]['rol']:'';
-
-        return $resultado;
     }
 
     public function fields()

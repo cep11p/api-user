@@ -8,5 +8,4 @@ return [
     'USERID_APP'=>'3',
     'USER_APP'=>'gcb',
     'JWT_SECRET' => 'ZqCeBt}531',
-
 ];

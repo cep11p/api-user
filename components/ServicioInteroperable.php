@@ -99,11 +99,12 @@ class ServicioInteroperable extends Component
 
             \Yii::$app->getModule('audit')->data('catchedexc', \yii\helpers\VarDumper::dumpAsString($e->getResponse()->getBody()));
             \Yii::error('Error de integración:'.$e->getResponse()->getBody(), $category='apioj');
-            return $resultado;
+            
+            throw new \yii\web\HttpException(400, $resultado->message);
         } catch (Exception $e) {
-                \Yii::$app->getModule('audit')->data('catchedexc', \yii\helpers\VarDumper::dumpAsString($e));
-                \Yii::error('Error inesperado: se produjo:'.$e->getMessage(), $category='apioj');
-                return false;
+            $mensaje =$e->getMessage();
+            $statuCode =$e->statusCode;
+            throw new \yii\web\HttpException($statuCode, $mensaje);
         }
        
     }
@@ -146,17 +147,16 @@ class ServicioInteroperable extends Component
             \Yii::info($respuesta);
             return $respuesta;
         } catch (\GuzzleHttp\Exception\BadResponseException $e) {
-                $resultado = json_decode($e->getResponse()->getBody()->getContents());
+            $resultado = json_decode($e->getResponse()->getBody()->getContents());
+            \Yii::$app->getModule('audit')->data('catchedexc', \yii\helpers\VarDumper::dumpAsString($e->getResponse()->getBody()));
+            \Yii::error('Error de integración:'.$e->getResponse()->getBody(), $category='apioj');
+                
+            throw new \yii\web\HttpException(400, $resultado->message);
 
-                print_r($resultado);die();
-                \Yii::$app->getModule('audit')->data('catchedexc', \yii\helpers\VarDumper::dumpAsString($e->getResponse()->getBody()));
-                \Yii::error('Error de integración:'.$e->getResponse()->getBody(), $category='apioj');
-                #devolvemos array
-                return (array)$resultado;
-            } catch (\yii\web\HttpException $e){
-                $mensaje =$e->getMessage();
-                $statuCode =$e->statusCode;
-                throw new \yii\web\HttpException($statuCode, $mensaje);
+        } catch (\yii\web\HttpException $e){
+            $mensaje =$e->getMessage();
+            $statuCode =$e->statusCode;
+            throw new \yii\web\HttpException($statuCode, $mensaje);
         }
        
     }
@@ -198,11 +198,11 @@ class ServicioInteroperable extends Component
             \Yii::$app->getModule('audit')->data('catchedexc', \yii\helpers\VarDumper::dumpAsString($e->getResponse()->getBody()));
             \Yii::error('Error de integración:'.$e->getResponse()->getBody(), $category='apioj');
 
-            return $resultado;
+            throw new \yii\web\HttpException(400, $resultado->message);
         } catch (Exception $e) {
-                \Yii::$app->getModule('audit')->data('catchedexc', \yii\helpers\VarDumper::dumpAsString($e));
-                \Yii::error('Error inesperado: se produjo:'.$e->getMessage(), $category='apioj');
-                return false;
+            $mensaje =$e->getMessage();
+            $statuCode =$e->statusCode;
+            throw new \yii\web\HttpException($statuCode, $mensaje);
         }
        
     }
@@ -241,17 +241,15 @@ class ServicioInteroperable extends Component
             \Yii::info($respuesta);
             return $respuesta;
         } catch (\GuzzleHttp\Exception\BadResponseException $e) {
-                $resultado = json_decode($e->getResponse()->getBody()->getContents());
-                \Yii::$app->getModule('audit')->data('catchedexc', \yii\helpers\VarDumper::dumpAsString($e->getResponse()->getBody()));
-                \Yii::error('Error de integración:'.$e->getResponse()->getBody(), $category='apioj');
-                
-                #devolvemos array
-                return $resultado;
-            } catch (Exception $e) {
-                \Yii::$app->getModule('audit')->data('catchedexc', \yii\helpers\VarDumper::dumpAsString($e));
-                \Yii::error('Error inesperado: se produjo:'.$e->getMessage(), $category='apioj');
-
-                return $e->getMessage();
+            $resultado = json_decode($e->getResponse()->getBody()->getContents());
+            \Yii::$app->getModule('audit')->data('catchedexc', \yii\helpers\VarDumper::dumpAsString($e->getResponse()->getBody()));
+            \Yii::error('Error de integración:'.$e->getResponse()->getBody(), $category='apioj');
+            
+            throw new \yii\web\HttpException(400, $resultado->message);
+        } catch (Exception $e) {
+            $mensaje =$e->getMessage();
+            $statuCode =$e->statusCode;
+            throw new \yii\web\HttpException($statuCode, $mensaje);
         }
        
     }
@@ -290,16 +288,15 @@ class ServicioInteroperable extends Component
             \Yii::info($respuesta);
             return $respuesta;
         } catch (\GuzzleHttp\Exception\BadResponseException $e) {
-                $resultado = json_decode($e->getResponse()->getBody()->getContents());
-                \Yii::$app->getModule('audit')->data('catchedexc', \yii\helpers\VarDumper::dumpAsString($e->getResponse()->getBody()));
-                \Yii::error('Error de integración:'.$e->getResponse()->getBody(), $category='apioj');
-                
-                #devolvemos array
-                return $resultado;
+            $resultado = json_decode($e->getResponse()->getBody()->getContents());
+            \Yii::$app->getModule('audit')->data('catchedexc', \yii\helpers\VarDumper::dumpAsString($e->getResponse()->getBody()));
+            \Yii::error('Error de integración:'.$e->getResponse()->getBody(), $category='apioj');
+            
+            throw new \yii\web\HttpException(400, $resultado->message);
         } catch (Exception $e) {
-                \Yii::$app->getModule('audit')->data('catchedexc', \yii\helpers\VarDumper::dumpAsString($e));
-                \Yii::error('Error inesperado: se produjo:'.$e->getMessage(), $category='apioj');
-                return false;
+            $mensaje =$e->getMessage();
+            $statuCode =$e->statusCode;
+            throw new \yii\web\HttpException($statuCode, $mensaje);
         }
        
     }

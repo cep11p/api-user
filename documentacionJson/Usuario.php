@@ -46,7 +46,6 @@
 		"password":"carlos",
 		"email":"cep11p@correo.com",
 		"localidadid":2626,
-		"rol":"soporte"
 	}
 }
 # Con persona nueva
@@ -60,7 +59,6 @@
 		"password":"carlos",
 		"email":"cperez@correo.com",
 		"localidadid":2626,
-		"rol":"soporte"
 	}
 }
 **/

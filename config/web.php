@@ -63,15 +63,6 @@ $config = [
             'showScriptName' => false,
             'enableStrictParsing' => false,
             'rules' => [
-                // [   
-                //     'class' => 'yii\rest\UrlRule',
-                //     'controller' => 'usuario',   
-                //     'extraPatterns' => [
-                //         'POST login' => 'login',
-                //         'OPTIONS login' => 'options'
-                //         //'GET mostrar/{id}' => 'mostrar',
-                //     ],                        
-                // ],
                 /****** USUARIOS *******/
                 [   #Usuario
                     'class' => 'yii\rest\UrlRule',
@@ -105,6 +96,15 @@ $config = [
         ],
         'api' => [
             'class' => 'app\modules\api\Api',
+        ],
+        "audit"=>[
+            "class"=>"bedezign\yii2\audit\Audit",
+            "ignoreActions" =>['audit/*', 'debug/*'],
+            'userIdentifierCallback' => ['app\components\ServicioUsuarios', 'userIdentifierCallback'],
+            'userFilterCallback' => ['app\components\ServicioUsuarios', 'userFilterCallback'],
+            'accessIps'=>null,
+            'accessUsers'=>null,
+            'accessRoles'=>['admin']
         ],
     ],
     

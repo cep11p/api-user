@@ -163,7 +163,7 @@ class UsuarioController extends ActiveController
     }
     
     /**
-     * Se registra un usuario con rol, personaid y localidadid
+     * Se registra un usuario con personaid y localidadid
      *
      * @return void
      */
