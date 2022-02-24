@@ -147,17 +147,22 @@
   }
  **/
 
-/**** Crear Asignaciones a Usuarios*****
-* @url http://api.gcb.local/api/usuarios/crear-asignacion
+/**** Crear Asignacion de modulo a Usuario*****
+* @url http://user.local/api/usuarios/asignar-modulo
 * @method POST
 * @param arrayJson
 {
-	"usuarioid": 15,
-    "tipo_convenioid": 2,
-	"lista_permiso":[
-		{"name":"cuenta_bps_importar"},
-		{"name":"cuenta_ver"}
-    ]
+	"userid" : 1,
+	"moduloid" : 1
+}
+
+/**** Borrar Asignacion de modulo a Usuario*****
+* @url http://user.local/api/usuarios/desasignar-modulo
+* @method POST
+* @param arrayJson
+{
+	"userid" : 1,
+	"moduloid" : 1
 }
 
 /**** Listar Asignaciones a Usuarios*****

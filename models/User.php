@@ -2,10 +2,10 @@
 
 namespace app\models;
 
+use app\components\Help;
 use app\components\ServicioInteroperable;
 use app\models\ApiUser;
 use Yii;
-use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -31,174 +31,7 @@ class User extends ApiUser
             ]
         );
     }
-    
-    static function limpiarPermisos($params){
 
-        #Chequeamos que exista el usuario
-        if(!isset($params['usuarioid']) || empty($params['usuarioid'])){
-            throw new \yii\web\HttpException(400, json_encode([['error'=>['Falta el usuario']]]));
-        }
-
-        #Chequeamos la lista de permisos
-        if(!isset($params['lista_permiso']) || empty($params['lista_permiso'])){
-            throw new \yii\web\HttpException(400, 'Falta la lista de permisos');
-        }
-
-        #Chequeamos el tipo convenio
-        if(!isset($params['tipo_convenioid']) || empty($params['tipo_convenioid'])){
-            throw new \yii\web\HttpException(400, json_encode(['error'=>['Falta el Tipo Convenio']]));
-        }
-
-        #Buscamos el permiso distinto a borrar
-        $permisos = UsuarioHasConvenio::find()->select('permiso')->where(['userid'=>$params['usuarioid']])->andWhere(['!=','tipo_convenioid',$params['tipo_convenioid']])->distinct()->asArray()->all();
-
-        $i=0;
-        foreach ($params['lista_permiso'] as $permiso_borrar) {
-            foreach ($permisos as $permiso_bd) {
-                if($permiso_borrar == $permiso_bd['permiso']){
-                    unset($params['lista_permiso'][$i]);
-                }
-            }
-            $i++;
-        }
-
-        #Borramos los permisos (auth_assigment)
-        if(!empty($params['lista_permiso'])){
-            AuthAssignment::deleteAll([
-                'user_id'=>$params['usuarioid'],
-                'item_name'=>$params['lista_permiso']
-            ]);
-        }
-
-        #Borramos la regla (usuario_has_convenio)
-        UsuarioHasConvenio::deleteAll([
-            'userid'=>$params['usuarioid'],
-            'tipo_convenioid'=>$params['tipo_convenioid']
-        ]);
-    }
-
-    public static function setAsignacion($params){
-        #Validamos que exista el usuario
-        if(User::findOne(['id'=>$params['usuarioid']])==NULL){
-            throw new \yii\web\HttpException(400, 'El usuario con el id '.$params['usuarioid'].' no existe!');
-        }
-        
-        $transaction = Yii::$app->db->beginTransaction();
-        try {
-            SELF::limpiarPermisos($params);
-
-            #Asignamos los permisos
-            foreach ($params['lista_permiso'] as $value) {
-                if((AuthAssignment::findOne(['item_name'=>$value['name'], 'user_id'=>strval($params['usuarioid'])])) === NULL){
-                    $auth_assignment = new AuthAssignment();
-                    $auth_assignment->setAttributes(['item_name'=>$value['name'],'user_id'=>strval($params['usuarioid'])]);
-                    if(!$auth_assignment->save()){
-                        throw new \yii\web\HttpException(400, json_encode([$auth_assignment->errors]));
-                    }
-                }
-            }
-
-            #Asociamos el convenio (vinculacion de convenio, permiso y usuario)
-            foreach ($params['lista_permiso'] as $value) {
-                $model = new UsuarioHasConvenio();
-                $model->setAttributes([
-                    'userid'=>$params['usuarioid'],
-                    'tipo_convenioid'=>$params['tipo_convenioid'],
-                    'permiso'=>$value['name']
-                ]);
-
-                if(!$model->save()){
-                    throw new \yii\web\HttpException(400, json_encode($auth_assignment->errors));
-                }
-            }
-            
-            $transaction->commit();
-
-            return true;
-        }catch (\yii\web\HttpException $exc) {
-            $transaction->rollBack();
-            $mensaje =$exc->getMessage();
-            $statuCode =$exc->statusCode;
-            throw new \yii\web\HttpException($statuCode, $mensaje);
-        }
-    }
-    
-
-    public function getAsignaciones(){
-        $lista_tipo_convenio = $this->getTipoConveniosAsociados();
-
-        $i=0;
-        foreach ($lista_tipo_convenio as $value) {
-            $query = new Query();        
-            $query->select([
-                'permiso'
-            ]);
-            $query->from('usuario_has_convenio');
-            $query->where([
-                'userid'=>$this->id,
-                'tipo_convenioid'=>$value['tipo_convenioid']
-            ]);
-            
-            $command = $query->createCommand();
-            $rows = $command->queryAll();
-            
-            $permisos = array();
-            foreach ($rows as $value) {
-                $permisos[] = $value['permiso'];
-            }
-            $lista_tipo_convenio[$i]['lista_permiso'] = $permisos;
-            $lista_tipo_convenio[$i]['usuarioid'] = $this->id;
-            $i++;
-        }
-                
-        return $lista_tipo_convenio;
-    }
-
-    public function getTipoConveniosAsociados(){
-        $query = new Query();
-        
-        $query->select([
-            'tipo_convenio'=>'convenio.nombre',
-            'tipo_convenioid',
-        ]);
-
-        $query->from('usuario_has_convenio uhc1');
-        $query->leftJoin("tipo_convenio as convenio", "tipo_convenioid=convenio.id");
-        $query->where(['userid'=>$this->id]);
-        $query->groupBy('tipo_convenio');
-        
-        $command = $query->createCommand();
-        $rows = $command->queryAll();
-
-        return $rows;
-    }
-
-    /**
-     * Borramos los permisos de un usuario
-     *
-     * @param [array] $params
-     * @return void
-     */
-    public static function borrarAsignaciones($params){
-        #Validamos que exista el usuario
-        if(User::findOne(['id'=>$params['usuarioid']])==NULL){
-            throw new \yii\web\HttpException(400, 'El usuario con el id '.$params['usuarioid'].' no existe!');
-        }
-
-        $transaction = Yii::$app->db->beginTransaction();
-        try {
-
-            SELF::limpiarPermisos($params);
-            $transaction->commit();
-
-            return true;
-        }catch (\yii\web\HttpException $exc) {
-            $transaction->rollBack();
-            $mensaje =$exc->getMessage();
-            $statuCode =$exc->statusCode;
-            throw new \yii\web\HttpException($statuCode, $mensaje);
-        }
-    }
 
     /**
      * Se registra un usuario con su rol, perosonaid y localidadid
@@ -382,6 +215,85 @@ class User extends ApiUser
         }
         
         return $data;
+    }
+
+    /**
+     * Se asigna un modulo a un usuario
+     *
+     * @param [array] $params
+     * @return bool
+     */
+    public static function setAsignacion($params){
+        #Chequeamos que venga el modulo
+        if(!isset($params['moduloid']) || empty($params['moduloid'])){
+            throw new \yii\web\HttpException(400, 'Falta la lista de permisos');
+        }
+
+        #Validamos que exista el usuario
+        if(User::findOne(['id'=>$params['userid']])==NULL){
+            throw new \yii\web\HttpException(400, 'El usuario con el id '.$params['userid'].' no existe!');
+        }
+        
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $usuario_modulo = new UsuarioModulo();
+            $usuario_modulo->userid = $params['userid'];
+            $usuario_modulo->moduloid = $params['moduloid']; 
+
+            if(!$usuario_modulo->save()){
+                throw new \yii\web\HttpException(400, Help::ArrayErrorsToString($usuario_modulo->errors));
+            }
+            
+            $transaction->commit();
+
+            return true;
+        }catch (\yii\web\HttpException $exc) {
+            $transaction->rollBack();
+            $mensaje =$exc->getMessage();
+            $statuCode =$exc->statusCode;
+            throw new \yii\web\HttpException($statuCode, $mensaje);
+        }
+    }
+
+    /**
+     * Se borra la asigacion de un modulo a un usuario
+     *
+     * @param [array] $params
+     * @return bool
+     */
+    public static function unsetAsignacion($params){
+        #Chequeamos que venga el modulo
+        if(!isset($params['moduloid']) || empty($params['moduloid'])){
+            throw new \yii\web\HttpException(400, 'Falta la lista de permisos');
+        }
+
+        #Validamos que exista el usuario
+        if(!isset($params['userid']) || empty($params['userid'])){
+            throw new \yii\web\HttpException(400, 'Falta el id del usuario.');
+        }
+
+        $usuario_modulo = UsuarioModulo::find()->where(['userid' => $params['userid'], 'moduloid' => $params['moduloid']])->one();
+
+        if($usuario_modulo == null){
+            throw new \yii\web\HttpException(400, 'No se encuentra la asignacion de modulo para borrar');
+        }
+        
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+
+            if(!$usuario_modulo->delete()){
+                throw new \yii\web\HttpException(400, Help::ArrayErrorsToString($usuario_modulo->errors));
+            }
+            
+            $transaction->commit();
+
+            return true;
+        }catch (\yii\web\HttpException $exc) {
+            $transaction->rollBack();
+            $mensaje =$exc->getMessage();
+            $statuCode =$exc->statusCode;
+            throw new \yii\web\HttpException($statuCode, $mensaje);
+        }
     }
 
     /**

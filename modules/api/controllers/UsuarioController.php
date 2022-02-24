@@ -70,7 +70,7 @@ class UsuarioController extends ActiveController
                 ],
                 [
                     'allow' => true,
-                    'actions' => ['index','create','update','view','buscar-persona-por-cuil','baja', 'crear-asignacion', 'listar-asignacion','borrar-asignacion'],
+                    'actions' => ['index','create','update','view','buscar-persona-por-cuil','baja', 'asignar-modulo','desasignar-modulo', 'listar-asignacion','borrar-asignacion'],
                     'roles' => ['@'],
                 ]
             ]
@@ -276,7 +276,7 @@ class UsuarioController extends ActiveController
      *
      * @return void
      */
-    public function actionCrearAsignacion(){
+    public function actionAsignarModulo(){
         $params = Yii::$app->request->post();
         $resultado['success'] = false;
         if(User::setAsignacion($params)){
@@ -286,6 +286,23 @@ class UsuarioController extends ActiveController
 
         return $resultado;
     }
+
+    /**
+     * Se asignan permisos por programa a un usuario
+     *
+     * @return void
+     */
+    public function actionDesasignarModulo(){
+        $params = Yii::$app->request->post();
+        $resultado['success'] = false;
+        if(User::unsetAsignacion($params)){
+            $resultado['success'] = true;
+            $resultado['mensaje'] = 'Se borra una asignacion de modulo correctamente!';
+        }
+
+        return $resultado;
+    }
+
 
     /**
      * Listamos todos los permisos asignados a un usuario, Este listado esta agrupado
