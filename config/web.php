@@ -63,9 +63,13 @@ $config = [
             'showScriptName' => false,
             'enableStrictParsing' => false,
             'rules' => [
-                [   #Usuario
+                [   #Modulo
                     'class' => 'yii\rest\UrlRule',
                     'controller' => 'api/modulo'  
+                ],
+                [   #UsuarioModulo
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => 'api/usuario-modulo'  
                 ],
                 /****** USUARIOS *******/
                 [   #Usuario
