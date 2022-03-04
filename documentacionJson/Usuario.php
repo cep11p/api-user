@@ -1,8 +1,22 @@
 <?php
 
-/**** Para mostrar listado ****/
-/*****Login****
-* @url http://api.user.local/api/usuarios/login
+/** Login
+* @url http://user.local/api/usuarios/login
+* @method POST
+* @param arrayJson
+{
+  "username":"admin",
+  "password_hash":"admins"
+}
+* @return
+{
+    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDY0MzIyNjAsInVzdWFyaW8iOiJhZG1pbiIsInVpZCI6MX0.H1yFB9ZI6-mdsrVePA9a82iCaI7wRSZpn4s6uqLN9hQ",
+    "username": "admin"
+}
+**/
+
+/** Listado de usuarios
+* @url http://user.local/api/usuarios
 * @method POST
 * @param arrayJson
 {
@@ -33,10 +47,10 @@
 
 
 
-/*****Para crear usuario****
-* @url http://api.user.local/api/usuarios 
+/** Para crear usuario
+* @url http://user.local/api/usuarios 
 * @method POST
-* @param arrayJson
+* @param 
 # Con persona existente
 {
 	"personaid":2,
@@ -45,7 +59,7 @@
 		"username":"cep11p",
 		"password":"carlos",
 		"email":"cep11p@correo.com",
-		"localidadid":2626,
+		"localidadid":2626
 	}
 }
 # Con persona nueva
@@ -58,13 +72,20 @@
 		"username":"cperez",
 		"password":"carlos",
 		"email":"cperez@correo.com",
-		"localidadid":2626,
+		"localidadid":2626
 	}
+}
+* @return Json
+{
+    "message": "Se crea un usuario",
+    "data": {
+        "id": 21
+    }
 }
 **/
 
-/****** Para visualizar*****
-* @url http://api.user.local/api/usuarios/2
+/** Visualizar un usuario
+* @url http://user.local/api/usuarios/2
 * @method GET
 * @return arrayJson
 {
@@ -92,8 +113,8 @@
 }
 */
 
-/**** Para modificar*****
-* @url http://api.gps.local/api/usuarios/{$id} 
+/** Para modificar
+* @url http://gps.local/api/usuarios/{$id} 
 * @method PUT
 * @param arrayJson
 {
@@ -104,8 +125,8 @@
 }
 **/
 
-/**** Dar de baja un Usuarios*****
-* @url http://api.user.local/api/usuarios/baja/47 
+/** Dar de baja un Usuarios
+* @url http://user.local/api/usuarios/baja/47 
 * @method PUT
 * @param arrayJson
 {
@@ -115,7 +136,7 @@
 **/
 
 /** Buscar a un usuario por nro de cuil
- * @url http://api.user.local/api/usuarios/buscar-persona-por-cuil/20320542389
+ * @url http://user.local/api/usuarios/buscar-persona-por-cuil/20320542389
  * @method GET
  * @return arrayJson
  * 
@@ -147,7 +168,7 @@
   }
  **/
 
-/**** Crear Asignacion de modulo a Usuario*****
+/** Crear Asignacion de modulo a Usuario
 * @url http://user.local/api/usuarios/asignar-modulo
 * @method POST
 * @param arrayJson
@@ -155,8 +176,9 @@
 	"userid" : 1,
 	"moduloid" : 1
 }
+**/
 
-/**** Borrar Asignacion de modulo a Usuario*****
+/** Borrar Asignacion de modulo a Usuario
 * @url http://user.local/api/usuarios/desasignar-modulo
 * @method POST
 * @param arrayJson
@@ -164,9 +186,10 @@
 	"userid" : 1,
 	"moduloid" : 1
 }
+**/
 
-/**** Listar Asignaciones a Usuarios*****
-* @url http://api.gcb.local/api/usuarios/listar-asignacion/14
+/** Listar Asignaciones a Usuarios
+* @url http://gcb.local/api/usuarios/listar-asignacion/14
 * @method GET
 * @param return
 [
@@ -194,9 +217,10 @@
         "usuarioid": 31
     }
 ]
+**/
 
-/**** Borrar Asignaciones a Usuarios*****
-* @url http://api.gcb.local/api/usuarios/borrar-asignacion 
+/** Borrar Asignaciones a Usuarios
+* @url http://gcb.local/api/usuarios/borrar-asignacion 
 * @method POST
 * @param arrayJson
 {

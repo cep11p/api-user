@@ -1,7 +1,6 @@
 <?php
 
-/**** Para mostrar listado ****/
-/*****Login****
+/** Para mostrar listado
 * @url http://user.local/api/usuario-modulos?param1=valor1&param2=valor2
 * @param int pagesize este parametro si es igual 0 o está nulo desactiva la paginacion 
 * @param int userid
