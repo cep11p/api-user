@@ -10,6 +10,7 @@ namespace app\components;
 use yii\helpers\ArrayHelper;
 use app\models\LugarForm;
 use app\models\PersonaForm;
+use app\components\ServicioInteroperable;
 
 class VinculoInteroperableHelp extends \yii\base\Component{
 
@@ -88,7 +89,8 @@ class VinculoInteroperableHelp extends \yii\base\Component{
         
         $coleccion = [];
         if(isset($lista)){
-            $response = \Yii::$app->lugar->buscarLocalidad(array("ids"=>$ids,"pagesize"=>$pagesize));   
+            $servicioInteroperable = new ServicioInteroperable();
+            $resultado = $servicioInteroperable->buscarRegistro('lugar', 'localidad', ['ids' => $ids]);
         }
 
         if(isset($response['resultado']) && count($response['resultado'])>0){
