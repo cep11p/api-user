@@ -17,7 +17,7 @@
 
 /** Listado de usuarios
 * @url http://user.local/api/usuarios
-* @method POST
+* @method GET
 * @param arrayJson
 {
   "username":"admin",
@@ -114,7 +114,7 @@
 */
 
 /** Para modificar
-* @url http://gps.local/api/usuarios/{$id} 
+* @url http://user.local/api/usuarios/{$id} 
 * @method PUT
 * @param arrayJson
 {
