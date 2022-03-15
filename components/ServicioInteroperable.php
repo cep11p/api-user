@@ -9,7 +9,7 @@ namespace app\components;
 use yii\base\Component;
 use GuzzleHttp\Client;
 use Exception;
-
+use Yii;
 
 /**
  * Description of ServicioSolicitudComponent
@@ -48,19 +48,22 @@ class ServicioInteroperable extends Component
         return $criterio;
     }
 
+    /**
+     * Se crea el token para interoperar
+     */
     private function crearToken(){
-        $payload = [
-            'exp'=>time()+3600,
-            'usuario'=>\Yii::$app->params['USER_APP'],
-            'uid' => \Yii::$app->params['USERID_APP'],
-//            'usuario_real'=>\Yii::$app->user->identity->username //comentado para DEV
-        ];
         
-        $token = \Firebase\JWT\JWT::encode($payload, \Yii::$app->params['JWT_SECRET']);   
+        $headers = Yii::$app->request->headers;
+
+        if (preg_match('/^Bearer\s+(.*?)$/', $headers['authorization'], $matches)) {
+            $token = $matches[1];
+        } else {
+            throw new \yii\web\HttpException(500, 'Token invalido');
+        }
             
         return  $token;
     }
-    
+     
     /**
      * Esta funcion nos devuelve un listado de registros, donde tambien se puede aplicar filtros
      *
