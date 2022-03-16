@@ -118,6 +118,9 @@ class UsuarioController extends ActiveController
         if(!($usuario !== null && Password::validate($parametros['password_hash'],$usuario->password_hash))){
             throw new \yii\web\HttpException(401, 'usuario o contraseña inválido');
         }
+
+        #instanciamos nuestro 
+        $usuario = User::findOne(['id' => $usuario->id]);
         
         #Buscamos la tabla relacional user_persona
         $userPersona = UserPersona::findOne(['userid'=>$usuario->id]);
@@ -140,11 +143,14 @@ class UsuarioController extends ActiveController
         $userPersona->last_login_ip = Yii::$app->getRequest()->getUserIP();
         $userPersona->save();
 
+        $lista_modulo = $usuario->modulos;
+
         #Generamos el Token
         $payload = [
-            'exp'=>time()+3600*8,
-            'usuario'=>$usuario->username,
-            'uid' => $usuario->id  
+            'exp' => time()+3600*8,
+            'usuario' => $usuario->username,
+            'lista_modulo' => $lista_modulo,
+            'uid' =>  $usuario->id  
         ];
         $token = \Firebase\JWT\JWT::encode($payload, \Yii::$app->params['JWT_SECRET']);
         
@@ -152,6 +158,7 @@ class UsuarioController extends ActiveController
         $resultado = [
             'access_token' => $token,
             'username' => $usuario->username,
+            'lista_modulo' => $lista_modulo,
         ];
         
         #Si es diferente de admin

@@ -304,6 +304,14 @@ class User extends ApiUser
         return $this->hasOne(UserPersona::className(), ['userid' => 'id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getModulos()
+    {
+        return UsuarioModulo::find()->select('modulo.*')->leftJoin('modulo','modulo.id = moduloid')->where(['userid' => $this->id])->asArray()->all();
+    }
+
     public function fields()
     {
         $fields = ArrayHelper::merge(parent::fields(), [
@@ -336,9 +344,12 @@ class User extends ApiUser
             },
             "localidadid" => function () {
                 return $this->userPersona->localidadid;
+            },
+            "lista_modulo" => function () {
+                return $this->modulos;
             }
         ]);
-        
+
         unset($fields['password_hash'],$fields['auth_key']);
 
         return $fields;
