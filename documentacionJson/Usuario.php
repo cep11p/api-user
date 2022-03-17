@@ -249,14 +249,9 @@
   }
  **/
 
-/** Crear Asignacion de modulo a Usuario
-* @url http://user.local/api/usuarios/asignar-modulo
-* @method POST
-* @param arrayJson
-{
-	"userid" : 1,
-	"moduloid" : 1
-}
+/** Borrar un usuario de la bd
+* @url http://user.local/api/usuarios/2
+* @method DELETE
 **/
 
 /** Borrar Asignacion de modulo a Usuario

@@ -70,7 +70,7 @@ class UsuarioController extends ActiveController
                 ],
                 [
                     'allow' => true,
-                    'actions' => ['index','create','update','view','buscar-persona-por-cuil','baja', 'asignar-modulo','desasignar-modulo', 'listar-asignacion','borrar-asignacion'],
+                    'actions' => ['index','create','update','view','buscar-persona-por-cuil','baja','delete', 'asignar-modulo','desasignar-modulo', 'listar-asignacion','borrar-asignacion'],
                     'roles' => ['@'],
                 ]
             ]
