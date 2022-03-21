@@ -124,13 +124,18 @@
 * @param 
 # Con persona existente
 {
-	"personaid":2,
+	"personaid":8564,
 	"usuario":{
-		"personaid":2,
-		"username":"cep11p",
-		"password":"carlos",
+		"personaid":8564,
+		"username":"carlos",
+		"password":"12345678",
 		"email":"cep11p@correo.com",
-		"localidadid":2626
+		"localidadid":2626,
+		"modulo": {
+			"nombre" : "INVENTARIO",
+			"servicio" : "inventario"
+		},
+		"rol" : "usuario"
 	}
 }
 # Con persona nueva
@@ -143,7 +148,12 @@
 		"username":"cperez",
 		"password":"carlos",
 		"email":"cperez@correo.com",
-		"localidadid":2626
+		"localidadid":2626,
+        "modulo": {
+			"nombre" : "INVENTARIO",
+			"servicio" : "inventario"
+		},
+		"rol" : "usuario"
 	}
 }
 * @return Json
@@ -177,15 +187,7 @@
     "baja": false,
     "descripcion_baja": "",
     "localidadid": 2626,
-    "lista_modulo": [
-        {
-            "id": "2",
-            "nombre": "Lugar",
-            "servicio": "lugar",
-            "sigla": "LUG",
-            "componente": null
-        }
-    ],
+    "lista_modulo": [un rollback
     "nombre": "Ruben Alberto",
     "apellido": "Pezzatti",
     "nro_documento": "10477134",
