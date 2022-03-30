@@ -32,6 +32,37 @@ class User extends ApiUser
         );
     }
 
+    /**
+     * Chequeamos a el usuario si puede realizar consultas a sistemas
+     * @param mixed $params
+     * @return array
+     */
+    public function checkUser($param){
+        $userPersona = UserPersona::findOne(['userid'=>$this->id]);
+
+        if($userPersona==null){
+            throw new \yii\web\HttpException(400, 'El usuario no esta registrado como persona');
+        } 
+
+        #Chequeamos si el usuario no esta dado de baja
+        if(isset($this->fecha_baja)){
+            throw new \yii\web\HttpException(403, 'El usuario se encuentra deshabilitado');
+        }
+
+        #Chequeamos si el usuario puede realizar consulta en el modulo actual
+        $modulo = Modulo::findOne(['nombre' => $param['modulo']]);
+        if($modulo==null){
+            throw new \yii\web\HttpException(400, 'El modulo '.$param['modulo'].' no se encuentra registrado');
+        } 
+
+        $usuario_modulo = UsuarioModulo::findOne(['userid' => $this->id, 'moduloid' => $modulo->id]);
+        if($usuario_modulo==null){
+            throw new \yii\web\HttpException(403, 'El usario no tiene permitido realizar consultas en el modulo '.$param['modulo']);
+        } 
+        
+        return $this->toArray();
+    }
+
 
     /**
      * Se registra un usuario con su rol, perosonaid y localidadid
@@ -125,6 +156,12 @@ class User extends ApiUser
         return $personaid;
     }
 
+    /**
+     * Modifica los atributos del usuario
+     *
+     * @param [array] $params
+     * @return int id
+     */
     public function modificarUsuario($params){
         $id = '';
         $this->scenario = 'update';
@@ -150,6 +187,12 @@ class User extends ApiUser
         return $id;
     }
 
+    /**
+     * Realiza la baja de usuario logico
+     *
+     * @param [array] $params
+     * @return bool
+     */
     public function setBaja($params)
     {
         $resultado = false;
@@ -172,6 +215,12 @@ class User extends ApiUser
         return $resultado;
     }
 
+    /**
+     * Realizamos el alta de usuario logico
+     *
+     * @param [array] $params
+     * @return bool
+     */
     public function unSetBaja($params)
     {
         $resultado = false;
@@ -191,7 +240,12 @@ class User extends ApiUser
         return $resultado;
     }
 
-
+    /**
+     * Realizamos la busqueda de persona por cuil. Nos ayuda a reutilizar la persona ya registrada a ser un usuario
+     *
+     * @param [string] $cuil
+     * @return array persona con o sin usuario
+     */
     static function buscarPersonaPorCuil($cuil){
         $resultado = \Yii::$app->registral->buscarPersonaPorCuil($cuil);
                 

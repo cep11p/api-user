@@ -3,8 +3,10 @@
 namespace app\modules\api\controllers;
 
 use app\components\VinculoInteroperableHelp;
+use app\models\Modulo;
 use app\models\User;
 use app\models\UserPersona;
+use app\models\UsuarioModulo;
 use yii\rest\ActiveController;
 use Yii;
 use yii\web\Response;
@@ -70,7 +72,7 @@ class UsuarioController extends ActiveController
                 ],
                 [
                     'allow' => true,
-                    'actions' => ['index','create','update','view','buscar-persona-por-cuil','baja','delete', 'asignar-modulo','desasignar-modulo', 'listar-asignacion','borrar-asignacion'],
+                    'actions' => ['index','create','update','view','buscar-persona-por-cuil','baja','asignar-modulo','desasignar-modulo'],
                     'roles' => ['@'],
                 ]
             ]
@@ -121,6 +123,21 @@ class UsuarioController extends ActiveController
 
         #instanciamos nuestro 
         $usuario = User::findOne(['id' => $usuario->id]);
+
+        #Chequeamos si el usuario puede realizar consulta en el servicio actual
+        if(!isset($parametros['servicio']) || empty($parametros['servicio'])){
+            throw new \yii\web\HttpException(400, 'Falta el servicio, origen de la consulta');
+        } 
+
+        $modulo = Modulo::findOne(['servicio' => $parametros['servicio']]);
+        if($modulo==null){
+            throw new \yii\web\HttpException(400, 'El modulo '.$parametros['servicio'].' no se encuentra registrado');
+        } 
+
+        $usuario_modulo = UsuarioModulo::findOne(['userid' => $usuario->id, 'moduloid' => $modulo->id]);
+        if($usuario_modulo==null){
+            throw new \yii\web\HttpException(403, 'El usario no tiene permitido realizar consultas en el modulo '.$parametros['servicio']);
+        } 
         
         #Buscamos la tabla relacional user_persona
         $userPersona = UserPersona::findOne(['userid'=>$usuario->id]);
@@ -149,8 +166,8 @@ class UsuarioController extends ActiveController
         $payload = [
             'exp' => time()+3600*8,
             'usuario' => $usuario->username,
-            'lista_modulo' => $lista_modulo,
-            'uid' =>  $usuario->id  
+            'uid' =>  $usuario->id,
+            'token_origen' => $modulo->servicio //instanciamos el origen del token
         ];
         $token = \Firebase\JWT\JWT::encode($payload, \Yii::$app->params['JWT_SECRET']);
         
@@ -224,6 +241,24 @@ class UsuarioController extends ActiveController
         }
         $resultado = ArrayHelper::merge($model->toArray(),$model->userPersona->persona);
         $resultado['localidad'] = $model->userPersona->localidad;
+        
+        return $resultado;
+    }
+
+    /**
+     * Se chequea el estado del usuario para realizar la consulta actual
+     *
+     * @param [int] $id
+     * @return user
+     */
+    public function actionCheckUser($id){
+        $model = User::findOne(['id'=>$id]);
+        $params = Yii::$app->request->post();
+
+        if($model==NULL){
+            throw new \yii\web\HttpException(400, 'El usuario con el id '.$id.' no existe!');
+        }
+        $resultado = $model->checkUser($params);
         
         return $resultado;
     }
