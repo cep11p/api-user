@@ -50,6 +50,10 @@ class User extends ApiUser
         }
 
         #Chequeamos si el usuario puede realizar consulta en el modulo actual
+        if(!isset($param['modulo']) || empty($param['modulo'])){
+            throw new \yii\web\HttpException(500, "Falta incorporar el modulo para cherquearlo con el usuario");
+        }
+
         $modulo = Modulo::findOne(['nombre' => $param['modulo']]);
         if($modulo==null){
             throw new \yii\web\HttpException(400, 'El modulo '.$param['modulo'].' no se encuentra registrado');
