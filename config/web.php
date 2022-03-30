@@ -90,6 +90,8 @@ $config = [
                         'PUT baja/{id}' => 'baja',
                         'OPTIONS buscar-persona-por-cuil/{cuil}' => 'buscar-persona-por-cuil',
                         'GET buscar-persona-por-cuil/{cuil}' => 'buscar-persona-por-cuil',
+                        'OPTIONS check-user' => 'check-user',
+                        'POST check-user' => 'check-user',
                     ],
                     'tokens' => ['{id}'=>'<id:\\w+>', '{cuil}'=>'<cuil:\\w+>'],                       
                 ]

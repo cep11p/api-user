@@ -72,7 +72,7 @@ class UsuarioController extends ActiveController
                 ],
                 [
                     'allow' => true,
-                    'actions' => ['index','create','update','view','buscar-persona-por-cuil','baja','asignar-modulo','desasignar-modulo'],
+                    'actions' => ['index','create','update','view','buscar-persona-por-cuil','check-user','baja','asignar-modulo','desasignar-modulo'],
                     'roles' => ['@'],
                 ]
             ]
@@ -251,12 +251,15 @@ class UsuarioController extends ActiveController
      * @param [int] $id
      * @return user
      */
-    public function actionCheckUser($id){
-        $model = User::findOne(['id'=>$id]);
+    public function actionCheckUser(){
         $params = Yii::$app->request->post();
+        if(!isset($params['userid']) || empty($params['userid'])){
+            throw new \yii\web\HttpException(400, 'Falta el id del usuario');
+        }
+        $model = User::findOne(['id'=>$params['userid']]);
 
         if($model==NULL){
-            throw new \yii\web\HttpException(400, 'El usuario con el id '.$id.' no existe!');
+            throw new \yii\web\HttpException(400, 'El usuario con el id '.$params['userid'].' no existe!');
         }
         $resultado = $model->checkUser($params);
         
