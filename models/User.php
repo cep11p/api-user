@@ -49,20 +49,6 @@ class User extends ApiUser
             throw new \yii\web\HttpException(403, 'El usuario se encuentra deshabilitado');
         }
 
-        #Chequeamos si el usuario puede realizar consulta en el modulo actual
-        if(!isset($param['modulo']) || empty($param['modulo'])){
-            throw new \yii\web\HttpException(500, "Falta incorporar el modulo para cherquearlo con el usuario");
-        }
-
-        $modulo = Modulo::findOne(['nombre' => $param['modulo']]);
-        if($modulo==null){
-            throw new \yii\web\HttpException(400, 'El modulo '.$param['modulo'].' no se encuentra registrado');
-        } 
-
-        $usuario_modulo = UsuarioModulo::findOne(['userid' => $this->id, 'moduloid' => $modulo->id]);
-        if($usuario_modulo==null){
-            throw new \yii\web\HttpException(403, 'El usario no tiene permitido realizar consultas en el modulo '.$param['modulo']);
-        } 
         
         return $this->toArray();
     }
