@@ -3,10 +3,8 @@
 namespace app\modules\api\controllers;
 
 use app\components\VinculoInteroperableHelp;
-use app\models\Modulo;
 use app\models\User;
 use app\models\UserPersona;
-use app\models\UsuarioModulo;
 use yii\rest\ActiveController;
 use Yii;
 use yii\web\Response;
@@ -301,7 +299,7 @@ class UsuarioController extends ActiveController
     }
 
     /**
-     * Se asignan permisos por programa a un usuario
+     * Se vincula un modulo con un usuario
      *
      * @return void
      */

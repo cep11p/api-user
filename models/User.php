@@ -280,12 +280,16 @@ class User extends ApiUser
         
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $usuario_modulo = new UsuarioModulo();
-            $usuario_modulo->userid = $params['userid'];
-            $usuario_modulo->moduloid = $params['moduloid']; 
-
-            if(!$usuario_modulo->save()){
-                throw new \yii\web\HttpException(400, Help::ArrayErrorsToString($usuario_modulo->errors));
+            #solo registramos si no existe
+            $usuario_modulo = UsuarioModulo::findOne(['userid' => $params['userid'], 'moduloid' => $params['moduloid']]);
+            if($usuario_modulo == null){
+                $usuario_modulo = new UsuarioModulo();
+                $usuario_modulo->userid = $params['userid'];
+                $usuario_modulo->moduloid = $params['moduloid']; 
+    
+                if(!$usuario_modulo->save()){
+                    throw new \yii\web\HttpException(400, Help::ArrayErrorsToString($usuario_modulo->errors));
+                }
             }
             
             $transaction->commit();

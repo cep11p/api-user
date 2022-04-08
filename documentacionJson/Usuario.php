@@ -256,6 +256,16 @@
 * @method DELETE
 **/
 
+/** Asignacion de modulo a Usuario
+* @url http://user.local/api/usuarios/asignar-modulo
+* @method POST
+* @param arrayJson
+{
+	"userid" : 1,
+	"moduloid" : 1
+}
+**/
+
 /** Borrar Asignacion de modulo a Usuario
 * @url http://user.local/api/usuarios/desasignar-modulo
 * @method POST
